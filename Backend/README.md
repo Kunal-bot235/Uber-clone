@@ -116,10 +116,95 @@ curl -X POST http://localhost:4000/users/register \
 
 ---
 
+### 2. Login User
+
+#### **Endpoint**
+`POST /users/login`
+
+#### **Description**
+This endpoint allows a user to log in by validating their email and password. If the credentials are correct, it returns a JSON Web Token (JWT) along with the user details.
+
+#### **Request Body**
+The request body should be a JSON object with the following fields:
+
+| Field     | Type   | Required | Description                   |
+|-----------|--------|----------|-------------------------------|
+| email     | String | Yes      | Must be a valid email address |
+| password  | String | Yes      | Minimum 6 characters          |
+
+#### **Example Request**
+```json
+{
+  "email": "john.doe@example.com",
+  "password": "password123"
+}
+```
+
+#### **Responses**
+
+**200 OK**
+
+**Description:** User logged in successfully.
+
+**Response Body:**
+```json
+{
+  "token": "jwt_token_here",
+  "user": {
+    "_id": "user_id_here",
+    "fullname": {
+      "firstname": "John",
+      "lastname": "Doe"
+    },
+    "email": "john.doe@example.com"
+  }
+}
+```
+
+**400 Bad Request**
+
+**Description:** Validation error or missing required fields.
+
+**Response Body:**
+```json
+{
+  "errors": [
+    {
+      "msg": "Error message here",
+      "param": "field_name",
+      "location": "body"
+    }
+  ]
+}
+```
+
+**401 Unauthorized**
+
+**Description:** Invalid email or password.
+
+**Response Body:**
+```json
+{
+  "message": "Invalid email or password"
+}
+```
+
+#### **Example CURL Request**
+```sh
+curl -X POST http://localhost:4000/users/login \
+-H "Content-Type: application/json" \
+-d '{
+  "email": "john.doe@example.com",
+  "password": "password123"
+}'
+```
+
+---
+
 ## Additional Notes
 - Ensure MongoDB is running before starting the server.
 - Use a strong `JWT_SECRET` in production.
-- Extend the API with additional endpoints such as login, profile management, and ride-booking functionalities.
+- Extend the API with additional endpoints such as profile management and ride-booking functionalities.
 
 ---
 
