@@ -33,123 +33,38 @@
 
 ### 1. Register User
 
-#### **Endpoint**
-`POST /users/register`
-
-#### **Description**
-This endpoint registers a new user. It validates the input data, hashes the password, creates a new user in the database, and returns a JSON Web Token (JWT) along with the user details.
-
-#### **Request Body**
-The request body should be a JSON object with the following fields:
-
-| Field       | Type    | Required | Description                         |
-|------------|--------|----------|-------------------------------------|
-| fullname   | Object | Yes      | Contains user's first and last name |
-| firstname  | String | Yes      | Minimum 3 characters               |
-| lastname   | String | No       | Minimum 3 characters               |
-| email      | String | Yes      | Must be a valid email address       |
-| password   | String | Yes      | Minimum 6 characters               |
-
-#### **Example Request**
-```json
-{
-  "fullname": {
-    "firstname": "John",
-    "lastname": "Doe"
-  },
-  "email": "john.doe@example.com",
-  "password": "password123"
-}
-```
-
-#### **Responses**
-
-**200 OK**
-
-**Description:** User registered successfully.
-
-**Response Body:**
-```json
-{
-  "token": "jwt_token_here",
-  "user": {
-    "_id": "user_id_here",
-    "fullname": {
-      "firstname": "John",
-      "lastname": "Doe"
-    },
-    "email": "john.doe@example.com"
-  }
-}
-```
-
-**400 Bad Request**
-
-**Description:** Validation error or missing required fields.
-
-**Response Body:**
-```json
-{
-  "errors": [
-    {
-      "msg": "Error message here",
-      "param": "field_name",
-      "location": "body"
-    }
-  ]
-}
-```
-
-#### **Example CURL Request**
-```sh
-curl -X POST http://localhost:4000/users/register \
--H "Content-Type: application/json" \
--d '{
-  "fullname": {
-    "firstname": "John",
-    "lastname": "Doe"
-  },
-  "email": "john.doe@example.com",
-  "password": "password123"
-}'
-```
+... (existing documentation for `/users/register`)
 
 ---
 
 ### 2. Login User
 
+... (existing documentation for `/users/login`)
+
+---
+
+### 3. Get User Profile
+
 #### **Endpoint**
-`POST /users/login`
+`GET /users/profile`
 
 #### **Description**
-This endpoint allows a user to log in by validating their email and password. If the credentials are correct, it returns a JSON Web Token (JWT) along with the user details.
+This endpoint retrieves the profile of the currently authenticated user. The user must be logged in and provide a valid JWT token.
 
-#### **Request Body**
-The request body should be a JSON object with the following fields:
-
-| Field     | Type   | Required | Description                   |
-|-----------|--------|----------|-------------------------------|
-| email     | String | Yes      | Must be a valid email address |
-| password  | String | Yes      | Minimum 6 characters          |
-
-#### **Example Request**
-```json
-{
-  "email": "john.doe@example.com",
-  "password": "password123"
-}
-```
+#### **Headers**
+| Header            | Value           | Required | Description                     |
+|--------------------|-----------------|----------|---------------------------------|
+| Authorization      | Bearer `<token>` | Yes      | The JWT token of the logged-in user |
 
 #### **Responses**
 
 **200 OK**
 
-**Description:** User logged in successfully.
+**Description:** Successfully retrieved user profile.
 
 **Response Body:**
 ```json
 {
-  "token": "jwt_token_here",
   "user": {
     "_id": "user_id_here",
     "fullname": {
@@ -161,42 +76,66 @@ The request body should be a JSON object with the following fields:
 }
 ```
 
-**400 Bad Request**
-
-**Description:** Validation error or missing required fields.
-
-**Response Body:**
-```json
-{
-  "errors": [
-    {
-      "msg": "Error message here",
-      "param": "field_name",
-      "location": "body"
-    }
-  ]
-}
-```
-
 **401 Unauthorized**
 
-**Description:** Invalid email or password.
+**Description:** User is not authenticated or token is invalid.
 
 **Response Body:**
 ```json
 {
-  "message": "Invalid email or password"
+  "message": "Unauthorized"
 }
 ```
 
 #### **Example CURL Request**
 ```sh
-curl -X POST http://localhost:4000/users/login \
--H "Content-Type: application/json" \
--d '{
-  "email": "john.doe@example.com",
-  "password": "password123"
-}'
+curl -X GET http://localhost:4000/users/profile \
+-H "Authorization: Bearer <your_jwt_token>"
+```
+
+---
+
+### 4. Logout User
+
+#### **Endpoint**
+`GET /users/logout`
+
+#### **Description**
+This endpoint logs out the currently authenticated user by clearing the token from cookies and blacklisting it.
+
+#### **Headers**
+| Header            | Value           | Required | Description                     |
+|--------------------|-----------------|----------|---------------------------------|
+| Authorization      | Bearer `<token>` | Yes      | The JWT token of the logged-in user |
+
+#### **Responses**
+
+**200 OK**
+
+**Description:** Successfully logged out.
+
+**Response Body:**
+```json
+{
+  "message": "Logged out"
+}
+```
+
+**401 Unauthorized**
+
+**Description:** User is not authenticated or token is invalid.
+
+**Response Body:**
+```json
+{
+  "message": "Unauthorized"
+}
+```
+
+#### **Example CURL Request**
+```sh
+curl -X GET http://localhost:4000/users/logout \
+-H "Authorization: Bearer <your_jwt_token>"
 ```
 
 ---
