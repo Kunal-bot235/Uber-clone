@@ -258,18 +258,209 @@ curl -X POST http://localhost:4000/captains/register \
 
 ---
 
-## Additional Notes
-- Ensure MongoDB is running before starting the server.
-- Use a strong `JWT_SECRET` in production.
-- Extend the API with additional endpoints such as captain login and ride management functionalities.
+---
+
+### 6. Login Captain
+
+#### **Endpoint**
+`POST /captains/login`
+
+#### **Description**
+This endpoint allows a captain to log in by validating their email and password. If the credentials are correct, it returns a JSON Web Token (JWT) along with the captain details.
+
+#### **Request Body**
+The request body should be a JSON object with the following fields:
+
+| Field     | Type   | Required | Description                   |
+|-----------|--------|----------|-------------------------------|
+| email     | String | Yes      | Must be a valid email address |
+| password  | String | Yes      | Minimum 6 characters          |
+
+#### **Example Request**
+```json
+{
+    "email": "test_email@gmail.com",
+    "password": "test_captain"
+}
+```
+
+#### **Responses**
+
+**200 OK**
+
+**Description:** Captain logged in successfully.
+
+**Response Body:**
+```json
+{
+  "token": "jwt_token_here",
+  "captain": {
+    "_id": "captain_id_here",
+    "fullname": {
+      "firstname": "test_captain_firstname",
+      "lastname": "test_captain_lastname"
+    },
+    "email": "test_email@gmail.com",
+    "vehicle": {
+      "color": "red",
+      "plate": "MP 04 XY 6204",
+      "capacity": 3,
+      "vehicleType": "car"
+    }
+  }
+}
+```
+
+**400 Bad Request**
+
+**Description:** Validation error or missing required fields.
+
+**Response Body:**
+```json
+{
+  "errors": [
+    {
+      "msg": "Error message here",
+      "param": "field_name",
+      "location": "body"
+    }
+  ]
+}
+```
+
+**401 Unauthorized**
+
+**Description:** Invalid email or password.
+
+**Response Body:**
+```json
+{
+  "message": "Invalid email or password"
+}
+```
+
+#### **Example CURL Request**
+```sh
+curl -X POST http://localhost:4000/captains/login \
+-H "Content-Type: application/json" \
+-d '{
+    "email": "test_email@gmail.com",
+    "password": "test_captain"
+}'
+```
+
+---
+
+### 7. Get Captain Profile
+
+#### **Endpoint**
+`GET /captains/profile`
+
+#### **Description**
+This endpoint retrieves the profile of the currently authenticated captain. The captain must be logged in and provide a valid JWT token.
+
+#### **Headers**
+| Header            | Value           | Required | Description                     |
+|--------------------|-----------------|----------|---------------------------------|
+| Authorization      | Bearer `<token>` | Yes      | The JWT token of the logged-in captain |
+
+#### **Responses**
+
+**200 OK**
+
+**Description:** Successfully retrieved captain profile.
+
+**Response Body:**
+```json
+{
+  "captain": {
+    "_id": "captain_id_here",
+    "fullname": {
+      "firstname": "test_captain_firstname",
+      "lastname": "test_captain_lastname"
+    },
+    "email": "test_email@gmail.com",
+    "vehicle": {
+      "color": "red",
+      "plate": "MP 04 XY 6204",
+      "capacity": 3,
+      "vehicleType": "car"
+    }
+  }
+}
+```
+
+**401 Unauthorized**
+
+**Description:** Captain is not authenticated or token is invalid.
+
+**Response Body:**
+```json
+{
+  "message": "Unauthorized"
+}
+```
+
+#### **Example CURL Request**
+```sh
+curl -X GET http://localhost:4000/captains/profile \
+-H "Authorization: Bearer <your_jwt_token>"
+```
+
+---
+
+### 8. Logout Captain
+
+#### **Endpoint**
+`GET /captains/logout`
+
+#### **Description**
+This endpoint logs out the currently authenticated captain by clearing the token from cookies and blacklisting it.
+
+#### **Headers**
+| Header            | Value           | Required | Description                     |
+|--------------------|-----------------|----------|---------------------------------|
+| Authorization      | Bearer `<token>` | Yes      | The JWT token of the logged-in captain |
+
+#### **Responses**
+
+**200 OK**
+
+**Description:** Successfully logged out.
+
+**Response Body:**
+```json
+{
+  "message": "Logout successfully"
+}
+```
+
+**401 Unauthorized**
+
+**Description:** Captain is not authenticated or token is invalid.
+
+**Response Body:**
+```json
+{
+  "message": "Unauthorized"
+}
+```
+
+#### **Example CURL Request**
+```sh
+curl -X GET http://localhost:4000/captains/logout \
+-H "Authorization: Bearer <your_jwt_token>"
+```
+
 ---
 
 ## Additional Notes
 - Ensure MongoDB is running before starting the server.
 - Use a strong `JWT_SECRET` in production.
-- Extend the API with additional endpoints such as profile management and ride-booking functionalities.
+- Extend the API with additional endpoints such as ride management functionalities.
 
 ---
 
 ## License
 This project is licensed under the [MIT License](LICENSE).
+
