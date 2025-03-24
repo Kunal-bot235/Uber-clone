@@ -22,7 +22,7 @@ module.exports.registerCaptain=async (req,res,next) =>{
         return res.status(400).json({message:'Captain already exist'})
     }
 
-     const hashedPassword=await captainModel.schema.statics.hashedPassword(password);
+     const hashedPassword=await captainModel.hashedPassword(password);
      const captain = await captainService.createCaptain({
         firstname: fullname.firstname,
         lastname: fullname.lastname,
@@ -67,8 +67,9 @@ module.exports.loginCaptain = async (req, res, next) => {
         }
 
         const { email, password } = req.body;
+        
         const captain = await captainModel.findOne({ email }).select('+password');
-
+        
         if (!captain) {
             return res.status(401).json({ message: 'Invalid email or password' });
         }
@@ -92,9 +93,18 @@ module.exports.loginCaptain = async (req, res, next) => {
     }
 };
 
-module.exports.getCaptainProfile=async (req,res,next) =>{
-    res.status(200).json({captain:req.captain});
-}
+module.exports.getCaptainProfile = async (req, res, next) => {
+    try {
+        const captain = req.captain; // Assuming `authCaptain` middleware sets `req.captain`
+        if (!captain) {
+            return res.status(401).json({ message: 'Unauthorized' });
+        }
+        res.status(200).json({ captain });
+    } catch (error) {
+        console.error('Error fetching captain profile:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
 module.exports.logoutCaptain=async (req,res,next) =>{
     const token=req.cookies.token || req.headers.authorization?.split(' ')[1];
     await blackListTokenModel.create({token});
